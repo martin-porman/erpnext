@@ -1,0 +1,322 @@
+# Task: Refine ERPNext / Joosep / Trikato Accounting OS Integration Roadmap
+
+You are working in the `martin-porman/erpnext` fork and related Joosep / Trikato Accounting OS repositories.
+
+## Important Context
+
+Do **not** apply direct patches into the `martin-porman/erpnext` fork yet.
+
+The current task is planning, investigation, mapping, and splitting the work into manageable execution stacks.
+
+Write clearly in the project journal that:
+
+
+---
+
+## Current Priority Items
+
+The following items are known future integration targets i have all the nessesary ready for leater usag:
+
+| Area | Priority | Source / Notes |
+|---|---:|---|
+| E-invoice v1.11 XML generation | High | OMNIVA / Envoice SOAP integration |
+| E-invoice field mapping | High | `earved.prg`, full field map should be documented in `PAYMENTS.md` |
+| X-Road submission module | High | `maksuamet_xtee.prg` + RIA certificate requirements |
+| Joosep5 data migration scripts | Medium | Full schema available at `/home/martin/dev/Joosep/` |
+
+These should be included in the roadmap, but not blindly implemented yet. First we need full understanding and validation.
+
+---
+
+## Joosep Source References
+
+Use the following source references for investigation:
+
+```text
+sftp://martin@192.168.10.6/home/martin/dev/Joosep/02-vfp-source/prg_index.md
+sftp://martin@192.168.10.6/home/martin/dev/Joosep/INDEX.md
+
+Local source root:
+
+/home/martin/dev/Joosep/
+
+The Joosep source code has already been decompiled. Use it for mapping business logic, accounting flow, field relationships, and migration requirements.
+
+Validation Strategy
+
+We will fetch real data for two companies from Joosep:
+
+A&T Ehitusjuhtimine
+Lingua Estonica OÜ
+
+Important detail:
+
+Joosep data is approximately 3 months behind the current system state.
+
+This is useful because we can compare historical Joosep accounting behavior against the patched or planned ERPNext / Accounting OS behavior.
+
+The goal is to use these two companies as validation fixtures:
+
+Extract their Joosep data.
+Map documents, invoices, payments, bank statements, accounting entries, and reports.
+Compare results against Accounting OS / ERPNext behavior.
+Identify mismatches.
+Use the mismatches to debug and improve the new system.
+
+Do not assume Joosep is the final target system. Joosep is a reference implementation and validation source.
+
+Trikato Accounting Company Context
+
+Trikato is the accounting company that will use ERPNext / Accounting OS to serve its customers.
+
+Current customer data is in Baserow:
+
+Baserow URL:
+http://192.168.10.6:3001/database/7/table/806/3390
+
+Database ID:
+7
+
+Customer table:
+806
+
+Current customer count:
+676
+
+The system must support accounting company operations, not just single-company bookkeeping.
+
+This means the design must account for:
+
+Administrator / CEO view
+Accountant view
+Customer assignment between employees
+Customer reassignment
+Customer onboarding
+Customer performance tracking
+Accountant workflow tracking
+Financial traceability
+Invoice tracking
+Service fee tracking
+Document and bank statement workflow
+Reporting and operational overview
+Main Goal
+
+Investigate and divide the full picture into manageable stacks or independent workflows.
+
+Produce a Markdown file that explains the full system picture and breaks it into clear tasks.
+
+The output should not be a vague brainstorm. It must be usable as an execution roadmap for later implementation.
+
+Required Output File
+
+Create a Markdown planning document, for example:
+
+PRODUS.md
+
+If a better name is already used in the repo, choose a clear name and explain why.
+
+The document must include:
+
+Current project status
+What is postponed to Phase 2
+Source references
+Joosep investigation scope
+Two-company validation plan
+ERPNext / Frappe integration scope
+Trikato accounting company workflow model
+Customer management workflow
+Accountant workflow
+Admin / CEO workflow
+E-invoice / XML / SOAP roadmap
+X-Road / Maksuamet roadmap
+Joosep migration roadmap
+Data comparison and validation strategy
+Independent work packages
+Execution order
+Risks, unknowns, and decisions required from Martin
+Required Journal Entry
+
+Add a journal entry stating:
+
+## Phase Decision: ERPNext Direct Patching Deferred
+
+Direct patches into the `martin-porman/erpnext` fork are not needed at this moment.
+
+Reason:
+The integrations are mostly ready, but the project must proceed step by step. Before patching ERPNext directly, we need to complete Joosep source mapping, two-company validation, customer workflow design, migration planning, and Accounting OS comparison.
+
+Decision:
+ERPNext/Frappe direct patching is moved to **Phase 2**.
+
+Phase 2 starts only after:
+- Joosep field and workflow mapping is documented
+- A&T Ehitusjuhtimine and Lingua Estonica OÜ validation data is extracted
+- Trikato customer-management workflows are mapped
+- ERPNext gaps are identified with evidence
+- The full roadmap is split into executable work packages
+Investigation Requirements
+
+Inspect the existing Joosep documentation and source indexes first:
+
+/home/martin/dev/Joosep/INDEX.md
+/home/martin/dev/Joosep/02-vfp-source/prg_index.md
+
+Identify the relevant .prg files for:
+
+Customers
+Invoices
+E-invoices
+Payments
+Bank statements
+Accounting entries
+VAT / KMD
+TSD if present
+Annual reports if present
+Maksuamet / X-Road
+SOAP integrations
+Data export / import
+Company-specific data handling
+
+Do not guess. If something cannot be found, write:
+
+Not found in current source index.
+Workflow Mapping Requirements
+
+Map the full accounting flow from source data to accounting result:
+
+Customer
+→ Documents
+→ Bank statements
+→ Invoices
+→ Payments
+→ Accounting entries
+→ VAT / tax declarations
+→ Reports
+→ Validation against Joosep output
+
+For each workflow, document:
+
+Source files
+Relevant tables or fields
+Business logic location
+Missing information
+Migration risk
+Whether it belongs to:
+ERPNext patching
+Accounting OS wrapper
+Joosep migration
+Baserow customer management
+Human workflow / admin process
+Trikato Customer Management Requirements
+
+Design the high-level workflow for managing 676 customers.
+
+The system must support:
+
+Administrator / CEO
+See all customers
+Assign customers to accountants
+Reassign customers
+Track customer status
+Track customer profitability
+Track invoice/payment status
+Track work progress
+View onboarding stage
+View risk / missing documents / late submissions
+Accountant
+See assigned customers only
+See monthly workflow per customer
+See missing documents
+See bank statement status
+See invoice/payment reconciliation status
+Track completed work units
+Track tasks related to KMD, TSD, annual reports, payroll, documents, and communication
+Customer
+Should eventually have a portal or communication layer, but this is not Phase 1 unless existing implementation already exists.
+Work Package Split
+
+Split the roadmap into independent work packages.
+
+Suggested structure:
+
+Stack 1: Joosep Source Understanding
+Map source files
+Identify relevant .prg modules
+Document accounting logic
+Identify migration-critical tables and fields
+Stack 2: Two-Company Validation Dataset
+Extract data for A&T Ehitusjuhtimine
+Extract data for Lingua Estonica OÜ
+Document what data exists
+Mark what is missing due to Joosep being 3 months behind
+Build comparison checklist
+Stack 3: ERPNext / Frappe Gap Analysis
+Compare Joosep workflows to ERPNext
+Identify what can be configured
+Identify what needs custom DocTypes
+Identify what needs server scripts
+Identify what belongs outside ERPNext
+Stack 4: Trikato Customer Management
+Map Baserow customer table 806
+Define admin workflow
+Define accountant assignment model
+Define customer status model
+Define performance and finance tracking model
+Stack 5: E-Invoice / SOAP / X-Road
+Map earved.prg
+Map maksuamet_xtee.prg
+Document XML v1.11 requirements
+Document OMNIVA / Envoice SOAP requirements
+Document RIA certificate requirement
+Defer implementation until Phase 2 unless explicitly instructed
+Stack 6: Accounting OS Wrapper Decision
+
+Determine whether each feature should be:
+
+Implemented directly in ERPNext
+Built as an Accounting OS wrapper
+Migrated from Joosep logic
+Rebuilt in Python
+Left as a human workflow
+Deferred
+Decision Matrix
+
+For every major workflow, classify it using this matrix:
+
+Workflow	Source Evidence	ERPNext Native?	Needs Patch?	Wrapper Possible?	Migration Needed?	Phase
+Customer management	Baserow table 806	Maybe	Unknown	Yes	Yes	Phase 1
+E-invoice XML	earved.prg	Unknown	Likely	Yes	Yes	Phase 2
+X-Road / Maksuamet	maksuamet_xtee.prg	No	Likely	Yes	Yes	Phase 2
+Joosep data migration	Joosep schema	No	Maybe	Yes	Yes	Phase 1
+Accountant workflow	Trikato process	Partial	Maybe	Yes	Yes	Phase 1
+
+Expand this table with real evidence found during inspection.
+
+Execution Rules
+
+Follow these rules:
+
+Do not patch ERPNext directly in this phase.
+Do not remove existing integrations.
+Do not guess missing source logic.
+Inspect source indexes before making conclusions.
+Use evidence from Joosep source files where possible.
+Keep a journal of investigation and decisions.
+Split large topics into executable tasks.
+Mark unknowns clearly.
+Write the roadmap in Markdown.
+Make the roadmap useful for later implementation by Claude, Codex, or a human developer.
+Final Report
+
+At the end, report:
+
+Files inspected
+Files created or updated
+Journal entry location
+Main workflows identified
+Work packages created
+Phase 2 items deferred
+Unknowns requiring Martin’s decision
+Recommended next execution step
+
+Do not claim implementation is complete unless it was actually implemented and verified.
